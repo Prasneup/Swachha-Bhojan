@@ -27,7 +27,7 @@ abstract class Payment {
 }
 
 enum PaymentStatus {
-    PENDING, SUCCESS, FAILED, 
+    PENDING, SUCCESS, FAILED, REFUNDED
 }
 
 enum PaymentMethod {
@@ -83,7 +83,8 @@ class CardPayment extends Payment {
         if (Math.random() < 0.95) {
             this.status = PaymentStatus.SUCCESS;
             System.out.println("✅ Card payment successful!");
-            System.out.println("Card ending with: ****" + cardNumber.substring(cardNumber.length() - 4));
+            String lastFour = cardNumber.length() >= 4 ? cardNumber.substring(cardNumber.length() - 4) : cardNumber;
+            System.out.println("Card ending with: ****" + lastFour);
             return true;
         } else {
             this.status = PaymentStatus.FAILED;
@@ -269,21 +270,24 @@ class Restaurant {
     public List<MenuItem> getMenu() { return menu; }
     public String getName() { return name; }
 
-    public void displayMenuByCategory() {
-        Map<String, List<MenuItem>> categoryMap = new HashMap<>();
+    public List<MenuItem> displayMenuByCategory() {
+        Map<String, List<MenuItem>> categoryMap = new LinkedHashMap<>();
         
         for (MenuItem item : menu) {
             categoryMap.computeIfAbsent(item.getCategory(), k -> new ArrayList<>()).add(item);
         }
 
+        List<MenuItem> displayedItems = new ArrayList<>();
         int itemNumber = 1;
         for (Map.Entry<String, List<MenuItem>> entry : categoryMap.entrySet()) {
             System.out.println("\n--- " + entry.getKey().toUpperCase() + " ---");
             for (MenuItem item : entry.getValue()) {
                 System.out.println(itemNumber + ". " + item);
+                displayedItems.add(item);
                 itemNumber++;
             }
         }
+        return displayedItems;
     }
 }
 
@@ -410,7 +414,7 @@ class Order {
 }
 
 enum OrderStatus {
-    PENDING, CONFIRMED,
+    PENDING, CONFIRMED, PREPARING, OUT_FOR_DELIVERY, DELIVERED, CANCELLED
 }
 
 public class FoodOrderingSystemWithPayment {
@@ -444,8 +448,9 @@ public class FoodOrderingSystemWithPayment {
                     manageWallet(customer.getWallet());
                     break;
                 case 5:
-                    placeOrder(order);
-                    running = false;
+                    if (placeOrder(order)) {
+                        running = false;
+                    }
                     break;
                 case 6:
                     System.out.println("Thank you for visiting! 👋");
@@ -500,25 +505,24 @@ public class FoodOrderingSystemWithPayment {
         System.out.print("Enter your choice: ");
     }
 
-    private static void viewMenu(Restaurant restaurant) {
+    private static List<MenuItem> viewMenu(Restaurant restaurant) {
         System.out.println("\n🍽️  MENU  🍽️");
-        restaurant.displayMenuByCategory();
+        return restaurant.displayMenuByCategory();
     }
 
     private static void addItemToOrder(Restaurant restaurant, Order order) {
-        viewMenu(restaurant);
-        List<MenuItem> menu = restaurant.getMenu();
+        List<MenuItem> displayedMenu = viewMenu(restaurant);
         
         System.out.print("\nEnter item number to add to cart (0 to go back): ");
-        int choice = getValidChoice(0, menu.size());
+        int choice = getValidChoice(0, displayedMenu.size());
         
         if (choice == 0) return;
         
         System.out.print("Enter quantity: ");
         int quantity = getValidQuantity();
         
-        order.addItem(menu.get(choice - 1), quantity);
-        System.out.println("✅ " + menu.get(choice - 1).getName() + " x " + quantity + " added to cart!");
+        order.addItem(displayedMenu.get(choice - 1), quantity);
+        System.out.println("✅ " + displayedMenu.get(choice - 1).getName() + " x " + quantity + " added to cart!");
     }
 
     private static void viewCart(Order order) {
@@ -558,10 +562,10 @@ public class FoodOrderingSystemWithPayment {
         }
     }
 
-    private static void placeOrder(Order order) {
+    private static boolean placeOrder(Order order) {
         if (order.isEmpty()) {
             System.out.println("🛒 Your cart is empty! Add some items first.");
-            return;
+            return false;
         }
     
         viewCart(order);
@@ -578,8 +582,10 @@ public class FoodOrderingSystemWithPayment {
         System.out.println("\nProcessing your order...");
         if (order.processPayment(method, sc)) {
             order.printReceipt();
+            return true;
         } else {
             System.out.println("❌ Order failed! Please try again with a different payment method.");
+            return false;
         }
     }
 
