@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tasty Bites - Premium Food Ordering & Real-Time Logistics",
-  description: "An immersive, glassmorphic food ordering portal featuring authentic Nepalese cuisines, dynamic wallet management, and live shipment tracking.",
+  title: "Bhojan Studio - Next-Gen Food Ordering for Nepal",
+  description: "An immersive, glassmorphic food ordering portal featuring authentic Nepalese cuisines, custom dumpling recipes, and live shipment tracking.",
 };
 
 export default function RootLayout({
