@@ -1823,42 +1823,41 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-              {/* 🎨 GUIDED PREFERENCE WIZARD */}
-              <div className="bg-stone-900 border border-stone-850 rounded-[32px] overflow-hidden p-6 shadow-xl relative flex flex-col gap-4 scroll-reveal">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-4">
+              {/* WIZARD & THALI BUILDER BENTO GRID */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* 🎨 GUIDED PREFERENCE WIZARD */}
+                <div className="bg-stone-900 border border-stone-850 rounded-[32px] overflow-hidden p-6 shadow-xl relative flex flex-col justify-between scroll-reveal">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500 border border-amber-500/20 shrink-0">
                       <Sparkles className="w-5 h-5 text-amber-500 animate-pulse" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-black text-stone-100 uppercase tracking-wider">Guided Preference Wizard</h3>
-                      <p className="text-[10px] text-stone-500 font-semibold mt-0.5">Customize your wrapper, diet, onion, and spice tolerance in our premium conversational onboarding flow</p>
+                      <h3 className="text-sm font-black text-stone-100 uppercase tracking-wider">Preference Wizard</h3>
+                      <p className="text-[10px] text-stone-500 font-semibold mt-0.5">Customize your wrapper, diet, onion, and spice tolerance in our premium flow</p>
                     </div>
                   </div>
                   <button 
                     onClick={() => setIsWizardOpen(true)}
-                    className="text-[10px] font-black bg-amber-500 hover:bg-amber-600 text-stone-950 px-4 py-2.5 rounded-xl cursor-pointer transition-all shadow-md shadow-amber-500/10 flex items-center gap-1.5 shrink-0 self-stretch sm:self-auto justify-center"
+                    className="mt-4 text-[10px] font-black bg-amber-500 hover:bg-amber-600 text-stone-950 px-4 py-2.5 rounded-xl cursor-pointer transition-all shadow-md shadow-amber-500/10 flex items-center gap-1.5 justify-center w-full"
                   >
                     <Plus className="w-3.5 h-3.5 text-stone-950" /> Start Wizard
                   </button>
                 </div>
-              </div>
 
-              {/* 🍛 TRADITIONAL THAKALI THALI BUILDER */}
-              <div className="bg-stone-900 border border-stone-850 rounded-[32px] overflow-hidden p-6 shadow-xl relative flex flex-col gap-4 scroll-reveal">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-4">
+                {/* 🍛 TRADITIONAL THAKALI THALI BUILDER */}
+                <div className="bg-stone-900 border border-stone-850 rounded-[32px] overflow-hidden p-6 shadow-xl relative flex flex-col justify-between scroll-reveal">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500 border border-amber-500/20 shrink-0">
                       <Utensils className="w-5 h-5 text-amber-500 animate-pulse" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-black text-stone-100 uppercase tracking-wider">Traditional Thakali Thali Builder</h3>
+                      <h3 className="text-sm font-black text-stone-100 uppercase tracking-wider">Thakali Thali Builder</h3>
                       <p className="text-[10px] text-stone-500 font-semibold mt-0.5">Customize your own authentic Nepalese Thali set with rice, dhido, and side curries</p>
                     </div>
                   </div>
                   <button 
                     onClick={() => setIsThaliBuilderOpen(true)}
-                    className="text-[10px] font-black bg-amber-500 hover:bg-amber-600 text-stone-950 px-4 py-2.5 rounded-xl cursor-pointer transition-all shadow-md shadow-amber-500/10 flex items-center gap-1.5 shrink-0 self-stretch sm:self-auto justify-center"
+                    className="mt-4 text-[10px] font-black bg-amber-500 hover:bg-amber-600 text-stone-950 px-4 py-2.5 rounded-xl cursor-pointer transition-all shadow-md shadow-amber-500/10 flex items-center gap-1.5 justify-center w-full"
                   >
                     <Plus className="w-3.5 h-3.5 text-stone-950" /> Build Your Thali
                   </button>
