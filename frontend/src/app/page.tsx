@@ -47,7 +47,109 @@ interface FlyingItem {
   startY: number;
 }
 
+const TRANSLATIONS = {
+  en: {
+    menuExplorer: "Menu Explorer",
+    orderHistory: "Order History",
+    tiffinPlans: "Tiffin Plans",
+    welcome: "Welcome",
+    register: "Register",
+    searchPlaceholder: "Search Momos, Noodles, Drinks...",
+    foodCategories: "Food Categories",
+    selectCuisines: "Select Cuisines",
+    filterByMood: "Filter by Mood",
+    preferenceWizard: "Preference Wizard",
+    preferenceWizardDesc: "Customize your wrapper, diet, onion, and spice tolerance in our premium flow",
+    startWizard: "Start Wizard",
+    thaliBuilder: "Thakali Thali Builder",
+    thaliBuilderDesc: "Customize your own authentic Nepalese Thali set with rice, dhido, and side curries",
+    buildThali: "Build Your Thali",
+    checkoutBasket: "Checkout Basket",
+    items: "Items",
+    delivery: "Delivery",
+    pickup: "Pickup (Self)",
+    emptyBasket: "Your basket is empty.",
+    itemsSubtotal: "Items Subtotal",
+    standardDelivery: "Standard Delivery",
+    minimumOrder: "Minimum Order Rs. 200 Required",
+    estimatedTotal: "Estimated Total",
+    selectPayment: "Select Payment Method",
+    confirmCheckout: "Confirm Order & Checkout",
+    clearCart: "Clear Cart",
+    youMightAlsoLike: "You Might Also Like",
+    aiRecommend: "AI Recommend",
+    add: "+ Add",
+    viewIngredients: "View Ingredients & Allergens",
+    hideDetails: "Hide Details"
+  },
+  ne: {
+    menuExplorer: "मेनु अन्वेषण",
+    orderHistory: "अर्डर इतिहास",
+    tiffinPlans: "टिफिन योजनाहरू",
+    welcome: "स्वागत छ",
+    register: "दर्ता गर्नुहोस्",
+    searchPlaceholder: "मोमो, चाउमिन, पेय पदार्थ खोज्नुहोस्...",
+    foodCategories: "खाद्य कोटिहरू",
+    selectCuisines: "व्यञ्जनहरू छान्नुहोस्",
+    filterByMood: "मुड अनुसार फिल्टर",
+    preferenceWizard: "प्राथमिकता विजार्ड",
+    preferenceWizardDesc: "हाम्रो प्रिमियम विजार्ड मार्फत स्वाद र मोमो अनुकूलन गर्नुहोस्",
+    startWizard: "विजार्ड सुरु गर्नुहोस्",
+    thaliBuilder: "थकाली थाली बिल्डर",
+    thaliBuilderDesc: "भात, ढिँडो र अन्य परिकारहरू छानी आफ्नै थाली तयार पार्नुहोस्",
+    buildThali: "थाली बनाउनुहोस्",
+    checkoutBasket: "अर्डर बास्केट",
+    items: "सामग्रीहरू",
+    delivery: "डेलिभरी",
+    pickup: "आफैं लिने (पिकअप)",
+    emptyBasket: "तपाईंको बास्केट खाली छ।",
+    itemsSubtotal: "सामग्री उप-योग",
+    standardDelivery: "डेलिभरी शुल्क",
+    minimumOrder: "न्यूनतम रु २०० अर्डर आवश्यक छ",
+    estimatedTotal: "अनुमानित जम्मा रकम",
+    selectPayment: "भुक्तानी विधि छान्नुहोस्",
+    confirmCheckout: "अर्डर निश्चित गर्नुहोस्",
+    clearCart: "बास्केट खाली गर्नुहोस्",
+    youMightAlsoLike: "तपाईंलाई मनपर्न सक्छ",
+    aiRecommend: "सिफारिस गरिएको",
+    add: "+ थप्नुहोस्",
+    viewIngredients: "सामग्री र एलर्जी जानकारी",
+    hideDetails: "जानकारी लुकाउनुहोस्"
+  }
+};
+
+interface FestivalBannerConfig {
+  isEnabled: boolean;
+  festivalName: string;
+  bannerImage: string;
+  offerText: string;
+  couponCode?: string;
+  themeColor: string;
+}
+
+const FESTIVAL_CONFIGS: Record<string, FestivalBannerConfig> = {
+  dashain: {
+    isEnabled: true,
+    festivalName: "Dashain Festive Offer",
+    bannerImage: "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=1200&auto=format&fit=crop&q=80",
+    offerText: "Get 15% flat off on all family Momo combos! Celebrate Dashain with pure taste.",
+    couponCode: "DASHAIN15",
+    themeColor: "from-amber-600 to-rose-700"
+  },
+  tihar: {
+    isEnabled: true,
+    festivalName: "Tihar Festival of Lights",
+    bannerImage: "https://images.unsplash.com/photo-1542856391-010fb87dcfed?w=1200&auto=format&fit=crop&q=80",
+    offerText: "Free special sweet treats with every order above Rs. 500. Happy Tihar!",
+    couponCode: "TIHARLIGHT",
+    themeColor: "from-orange-500 to-yellow-600"
+  }
+};
+
 export default function Dashboard() {
+  const [lang, setLang] = useState<'en' | 'ne'>('en');
+  const [activeFestival, setActiveFestival] = useState<'dashain' | 'tihar' | 'none'>('dashain');
+
   // Navigation tabs
   const [activeTab, setActiveTab] = useState<'menu' | 'history' | 'tiffin'>('menu');
 
@@ -1302,7 +1404,7 @@ export default function Dashboard() {
                   activeTab === 'menu' ? 'bg-amber-500 text-stone-950' : 'text-stone-400 hover:text-amber-500'
                 }`}
               >
-                Menu Explorer
+                {TRANSLATIONS[lang].menuExplorer}
               </button>
               <button
                 onClick={() => {
@@ -1313,7 +1415,7 @@ export default function Dashboard() {
                   activeTab === 'history' ? 'bg-amber-500 text-stone-950' : 'text-stone-400 hover:text-amber-500'
                 }`}
               >
-                <History className="w-3.5 h-3.5" /> Order History
+                <History className="w-3.5 h-3.5" /> {TRANSLATIONS[lang].orderHistory}
               </button>
               <button
                 onClick={() => setActiveTab('tiffin')}
@@ -1321,7 +1423,7 @@ export default function Dashboard() {
                   activeTab === 'tiffin' ? 'bg-amber-500 text-stone-950' : 'text-stone-400 hover:text-amber-500'
                 }`}
               >
-                <Calendar className="w-3.5 h-3.5" /> Tiffin Plans
+                <Calendar className="w-3.5 h-3.5" /> {TRANSLATIONS[lang].tiffinPlans}
               </button>
             </nav>
 
@@ -1329,10 +1431,32 @@ export default function Dashboard() {
               Staff Portal
             </a>
 
+            {/* Language Switcher */}
+            <button
+              onClick={() => setLang(lang === 'en' ? 'ne' : 'en')}
+              className="text-xs text-amber-500 hover:text-amber-600 font-black transition-all border border-amber-500/20 hover:border-amber-500/40 px-3 py-1.5 rounded-xl bg-stone-950 cursor-pointer select-none"
+            >
+              {lang === 'en' ? 'नेपाली' : 'English'}
+            </button>
+
+            {/* Festival Simulation Control */}
+            <div className="flex bg-stone-950 px-2.5 py-1.5 rounded-xl border border-stone-850 gap-1.5 items-center select-none text-[10px]">
+              <span className="text-stone-500 font-extrabold uppercase tracking-wider">Festival:</span>
+              <select
+                value={activeFestival}
+                onChange={(e) => setActiveFestival(e.target.value as 'dashain' | 'tihar' | 'none')}
+                className="bg-transparent text-amber-500 font-bold border-none outline-none cursor-pointer focus:ring-0 text-[10px] py-0"
+              >
+                <option value="dashain" className="bg-stone-900 text-stone-300">Dashain</option>
+                <option value="tihar" className="bg-stone-900 text-stone-300">Tihar</option>
+                <option value="none" className="bg-stone-900 text-stone-300">None</option>
+              </select>
+            </div>
+
             {customer ? (
               <div className="flex items-center gap-3">
                 <div className="text-right hidden sm:block">
-                  <span className="text-[10px] font-bold text-stone-500 block uppercase">Welcome</span>
+                  <span className="text-[10px] font-bold text-stone-500 block uppercase">{TRANSLATIONS[lang].welcome}</span>
                   <strong className="text-xs text-stone-100 font-extrabold">{customer.name}</strong>
                 </div>
                 <button
@@ -1348,7 +1472,7 @@ export default function Dashboard() {
                 onClick={() => setShowRegModal(true)}
                 className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-stone-950 text-xs font-black uppercase tracking-wider rounded-full shadow transition-colors cursor-pointer"
               >
-                Register
+                {TRANSLATIONS[lang].register}
               </button>
             )}
           </div>
@@ -1643,6 +1767,40 @@ export default function Dashboard() {
         {/* 3. MENU / CATALOG EXPLORER */}
         {activeTab === 'menu' && (
           <div className="block w-full">
+            {/* FESTIVAL BANNER SYSTEM */}
+            {activeFestival !== 'none' && (() => {
+              const config = FESTIVAL_CONFIGS[activeFestival];
+              if (!config || !config.isEnabled) return null;
+              return (
+                <div className={`relative rounded-[32px] overflow-hidden mb-8 border border-amber-500/10 shadow-2xl bg-gradient-to-r ${config.themeColor} text-white p-6 md:p-8 flex flex-col md:flex-row justify-between items-center gap-6 scroll-reveal`}>
+                  {/* Banner Image / Background Graphic overlay */}
+                  <div className="absolute inset-0 opacity-10 bg-cover bg-center pointer-events-none" style={{ backgroundImage: `url(${config.bannerImage})` }} />
+                  
+                  <div className="relative z-10 flex-1 flex flex-col gap-2">
+                    <span className="text-[10px] font-black text-amber-300 uppercase tracking-widest block bg-black/30 w-max px-2.5 py-1 rounded-full border border-amber-500/20">
+                      🎉 {config.festivalName}
+                    </span>
+                    <h2 className="text-xl md:text-2xl font-black serif-title tracking-tight leading-tight">
+                      Special Celebration Deal!
+                    </h2>
+                    <p className="text-xs text-stone-100 leading-relaxed max-w-xl">
+                      {config.offerText}
+                    </p>
+                  </div>
+
+                  {config.couponCode && (
+                    <div className="relative z-10 shrink-0 bg-black/30 border border-white/10 p-4 rounded-2xl flex flex-col items-center gap-1.5 text-center min-w-[150px]">
+                      <span className="text-[8px] font-bold text-stone-400 uppercase tracking-widest block">Promo Coupon</span>
+                      <strong className="text-base font-black tracking-widest text-amber-300 select-all border border-dashed border-amber-400/40 px-3 py-1 rounded bg-black/25">
+                        {config.couponCode}
+                      </strong>
+                      <span className="text-[7.5px] text-stone-400 font-semibold block">Click to select & copy</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+
             {/* HERO SECTION */}
             <div className="relative flex flex-col items-center text-center py-10 px-4 md:py-16 md:px-8 w-full bg-background mb-8 scroll-reveal">
               {/* Heading Text Block with organic doodles */}
@@ -1916,7 +2074,7 @@ export default function Dashboard() {
                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" />
                     <input
                       type="text"
-                      placeholder="Search Momos, Noodles, Drinks..."
+                      placeholder={TRANSLATIONS[lang].searchPlaceholder}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full pl-10 pr-4 py-2.5 rounded-2xl glass-input text-xs font-semibold"
@@ -1940,9 +2098,9 @@ export default function Dashboard() {
                               : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900/40'
                           }`}
                         >
-                          {mode === 'ALL' && 'All Cuisines'}
-                          {mode === 'VEG' && 'Veg Only'}
-                          {mode === 'NON_VEG' && 'Non-Veg'}
+                          {mode === 'ALL' && (lang === 'en' ? 'All Cuisines' : 'सबै व्यञ्जन')}
+                          {mode === 'VEG' && (lang === 'en' ? 'Veg Only' : 'शाकाहारी मात्र')}
+                          {mode === 'NON_VEG' && (lang === 'en' ? 'Non-Veg' : 'मांसाहारी')}
                         </button>
                       ))}
                     </div>
@@ -1963,9 +2121,9 @@ export default function Dashboard() {
                               : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900/40'
                           }`}
                         >
-                          {load === 'normal' && 'Normal ETA'}
-                          {load === 'busy' && 'Busy (+10m)'}
-                          {load === 'very_busy' && 'Jammed (+20m)'}
+                          {load === 'normal' && (lang === 'en' ? 'Normal ETA' : 'सामान्य समय')}
+                          {load === 'busy' && (lang === 'en' ? 'Busy (+10m)' : 'व्यस्त (+१० मिनेट)')}
+                          {load === 'very_busy' && (lang === 'en' ? 'Jammed (+20m)' : 'जाम (+२० मिनेट)')}
                         </button>
                       ))}
                     </div>
@@ -1975,7 +2133,7 @@ export default function Dashboard() {
                 {/* MENU CATEGORIES & CUISINES PANEL */}
                 <div className="glass-panel rounded-[32px] p-5 flex flex-col gap-4 border border-amber-500/10 shadow-xl scroll-reveal">
                   <div>
-                    <label className="block text-[8px] font-black uppercase text-stone-500 tracking-widest mb-2">Food Categories</label>
+                    <label className="block text-[8px] font-black uppercase text-stone-500 tracking-widest mb-2">{TRANSLATIONS[lang].foodCategories}</label>
                     <div className="flex gap-1.5 overflow-x-auto pb-1 max-w-full no-scrollbar">
                       {mockCategories.map((cat) => (
                         <button
@@ -1987,14 +2145,14 @@ export default function Dashboard() {
                               : 'bg-stone-900/60 text-stone-400 hover:bg-stone-900 border border-stone-800'
                           }`}
                         >
-                          {cat}
+                          {cat === 'All' ? (lang === 'en' ? 'All' : 'सबै कोटि') : (lang === 'en' ? cat : cat === 'Appetizers' ? 'स्टार्टर्स' : cat === 'Main Course' ? 'मुख्य खाना' : cat === 'Beverages' ? 'पेय पदार्थ' : cat === 'Fast Food' ? 'फास्ट फूड' : cat === 'Pizza' ? 'पिज्जा' : cat)}
                         </button>
                       ))}
                     </div>
                   </div>
 
                   <div className="border-t border-stone-850/40 pt-3">
-                    <label className="block text-[8px] font-black uppercase text-stone-500 tracking-widest mb-2">Select Cuisines</label>
+                    <label className="block text-[8px] font-black uppercase text-stone-500 tracking-widest mb-2">{TRANSLATIONS[lang].selectCuisines}</label>
                     <div className="flex gap-1.5 overflow-x-auto pb-1 max-w-full no-scrollbar">
                       {['All', 'Nepali', 'Newari', 'Sherpa', 'Chinese', 'Italian', 'American', 'Beverages'].map((c) => (
                         <button
@@ -2006,14 +2164,14 @@ export default function Dashboard() {
                               : 'bg-stone-900/60 text-stone-400 hover:bg-stone-900 border border-stone-800'
                           }`}
                         >
-                          {c === 'All' ? 'All Cuisines' : c}
+                          {c === 'All' ? (lang === 'en' ? 'All Cuisines' : 'सबै व्यञ्जन') : (lang === 'en' ? c : c === 'Nepali' ? 'नेपाली' : c === 'Newari' ? 'नेवारी' : c === 'Sherpa' ? 'शेर्पा' : c === 'Chinese' ? 'चिनियाँ' : c === 'Italian' ? 'इटालियन' : c === 'American' ? 'अमेरिकी' : c === 'Beverages' ? 'पेय पदार्थ' : c)}
                         </button>
                       ))}
                     </div>
                   </div>
 
                   <div className="border-t border-stone-850/40 pt-3">
-                    <label className="block text-[8px] font-black uppercase text-stone-500 tracking-widest mb-2">Filter by Mood</label>
+                    <label className="block text-[8px] font-black uppercase text-stone-500 tracking-widest mb-2">{TRANSLATIONS[lang].filterByMood}</label>
                     <div className="flex gap-1.5 overflow-x-auto pb-1 max-w-full no-scrollbar">
                       {['All', 'Celebrating', 'Comfort Food', 'Feeling Healthy', 'Feeling Lazy'].map((m) => (
                         <button
@@ -2041,15 +2199,15 @@ export default function Dashboard() {
                       <Sparkles className="w-5 h-5 text-amber-500 animate-pulse" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-black text-stone-100 uppercase tracking-wider">Preference Wizard</h3>
-                      <p className="text-[10px] text-stone-500 font-semibold mt-0.5">Customize your wrapper, diet, onion, and spice tolerance in our premium flow</p>
+                      <h3 className="text-sm font-black text-stone-100 uppercase tracking-wider">{TRANSLATIONS[lang].preferenceWizard}</h3>
+                      <p className="text-[10px] text-stone-500 font-semibold mt-0.5">{TRANSLATIONS[lang].preferenceWizardDesc}</p>
                     </div>
                   </div>
                   <button 
                     onClick={() => setIsWizardOpen(true)}
                     className="mt-4 text-[10px] font-black bg-amber-500 hover:bg-amber-600 text-stone-950 px-4 py-2.5 rounded-xl cursor-pointer transition-all shadow-md shadow-amber-500/10 flex items-center gap-1.5 justify-center w-full"
                   >
-                    <Plus className="w-3.5 h-3.5 text-stone-950" /> Start Wizard
+                    <Plus className="w-3.5 h-3.5 text-stone-950" /> {TRANSLATIONS[lang].startWizard}
                   </button>
                 </div>
 
@@ -2060,15 +2218,15 @@ export default function Dashboard() {
                       <Utensils className="w-5 h-5 text-amber-500 animate-pulse" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-black text-stone-100 uppercase tracking-wider">Thakali Thali Builder</h3>
-                      <p className="text-[10px] text-stone-500 font-semibold mt-0.5">Customize your own authentic Nepalese Thali set with rice, dhido, and side curries</p>
+                      <h3 className="text-sm font-black text-stone-100 uppercase tracking-wider">{TRANSLATIONS[lang].thaliBuilder}</h3>
+                      <p className="text-[10px] text-stone-500 font-semibold mt-0.5">{TRANSLATIONS[lang].thaliBuilderDesc}</p>
                     </div>
                   </div>
                   <button 
                     onClick={() => setIsThaliBuilderOpen(true)}
                     className="mt-4 text-[10px] font-black bg-amber-500 hover:bg-amber-600 text-stone-950 px-4 py-2.5 rounded-xl cursor-pointer transition-all shadow-md shadow-amber-500/10 flex items-center gap-1.5 justify-center w-full"
                   >
-                    <Plus className="w-3.5 h-3.5 text-stone-950" /> Build Your Thali
+                    <Plus className="w-3.5 h-3.5 text-stone-950" /> {TRANSLATIONS[lang].buildThali}
                   </button>
                 </div>
               </div>
@@ -2150,7 +2308,7 @@ export default function Dashboard() {
                             onClick={() => setExpandedAllergenId(expandedAllergenId === item.id ? null : item.id)}
                             className="text-[9px] font-black text-amber-500/70 hover:text-amber-500 uppercase tracking-widest flex items-center gap-1 mt-2.5 transition-colors cursor-pointer"
                           >
-                            <span>{expandedAllergenId === item.id ? 'Hide Details' : 'View Ingredients & Allergens'}</span>
+                            <span>{expandedAllergenId === item.id ? TRANSLATIONS[lang].hideDetails : TRANSLATIONS[lang].viewIngredients}</span>
                           </button>
 
                           {expandedAllergenId === item.id && (
@@ -2380,10 +2538,10 @@ export default function Dashboard() {
                   <div className="flex justify-between items-center mb-5 border-b border-stone-900 pb-3">
                     <div className="flex items-center gap-2">
                       <ShoppingBag className="w-5 h-5 text-amber-500" />
-                      <h3 className="font-extrabold text-stone-100 uppercase tracking-wider text-sm">Checkout Basket</h3>
+                      <h3 className="font-extrabold text-stone-100 uppercase tracking-wider text-sm">{TRANSLATIONS[lang].checkoutBasket}</h3>
                     </div>
                     <span className="text-[10px] font-black bg-stone-900 border border-stone-850 px-2.5 py-0.5 rounded text-amber-500">
-                      {cart.reduce((sum, item) => sum + item.quantity, 0)} Items
+                      {cart.reduce((sum, item) => sum + item.quantity, 0)} {TRANSLATIONS[lang].items}
                     </span>
                   </div>
 
@@ -2395,7 +2553,7 @@ export default function Dashboard() {
                         deliveryType === 'DELIVERY' ? 'bg-amber-500 text-black' : 'text-stone-400 hover:text-stone-200'
                       }`}
                     >
-                      <Truck className="w-3.5 h-3.5" /> Delivery
+                      <Truck className="w-3.5 h-3.5" /> {TRANSLATIONS[lang].delivery}
                     </button>
                     <button
                       onClick={() => setDeliveryType('PICKUP')}
@@ -2403,7 +2561,7 @@ export default function Dashboard() {
                         deliveryType === 'PICKUP' ? 'bg-amber-500 text-black' : 'text-stone-400 hover:text-stone-200'
                       }`}
                     >
-                      <Store className="w-3.5 h-3.5" /> Pickup (Self)
+                      <Store className="w-3.5 h-3.5" /> {TRANSLATIONS[lang].pickup}
                     </button>
                   </div>
 
@@ -2471,7 +2629,7 @@ export default function Dashboard() {
                     {(groupSession ? groupCart.length === 0 : cart.length === 0) && (
                       <div className="text-center py-10 flex flex-col items-center gap-2">
                         <ShoppingBag className="w-8 h-8 text-stone-700" />
-                        <p className="text-stone-500 text-xs font-semibold">Your basket is empty.</p>
+                        <p className="text-stone-500 text-xs font-semibold">{TRANSLATIONS[lang].emptyBasket}</p>
                       </div>
                     )}
                   </div>
@@ -2483,9 +2641,9 @@ export default function Dashboard() {
                     <div className="flex justify-between items-center">
                       <span className="text-[10px] font-black uppercase text-amber-500 tracking-wider flex items-center gap-1.5">
                         <Sparkles className="w-3 h-3 animate-pulse text-amber-500" />
-                        You Might Also Like
+                        {TRANSLATIONS[lang].youMightAlsoLike}
                       </span>
-                      <span className="text-[7.5px] bg-stone-950 px-1.5 py-0.5 rounded text-stone-500 font-black uppercase tracking-wider">AI Recommend</span>
+                      <span className="text-[7.5px] bg-stone-950 px-1.5 py-0.5 rounded text-stone-500 font-black uppercase tracking-wider">{TRANSLATIONS[lang].aiRecommend}</span>
                     </div>
                     
                     {/* TODO: Replace this rule-based recommendation logic with a Vertex AI / Recommendations AI model API call */}
@@ -2503,7 +2661,7 @@ export default function Dashboard() {
                             onClick={(e) => addToCart(rec, e)}
                             className="text-[9px] font-black uppercase bg-amber-500 text-stone-950 hover:bg-amber-600 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors shrink-0 ml-2"
                           >
-                            + Add
+                            {TRANSLATIONS[lang].add}
                           </button>
                         </div>
                       ))}
@@ -2515,13 +2673,13 @@ export default function Dashboard() {
                 <div className="border-t border-stone-900 pt-4 flex flex-col gap-4 mt-auto">
                   <div className="flex flex-col gap-1.5 text-xs">
                     <div className="flex justify-between font-semibold text-stone-400">
-                      <span>Items Subtotal</span>
+                      <span>{TRANSLATIONS[lang].itemsSubtotal}</span>
                       <span>Rs. {cartSubtotal}</span>
                     </div>
 
                     <div className="flex justify-between font-semibold text-stone-400">
                       <span>
-                        {deliveryType === 'PICKUP' ? 'Self-Pickup' : 'Standard Delivery'}
+                        {deliveryType === 'PICKUP' ? TRANSLATIONS[lang].pickup : TRANSLATIONS[lang].standardDelivery}
                       </span>
                       <span>
                         {deliveryType === 'PICKUP' ? 'Rs. 0' : (isEligibleFreeDelivery ? 'FREE' : `Rs. ${selectedRestaurant.deliveryFee}`)}
@@ -2531,12 +2689,12 @@ export default function Dashboard() {
                     {/* Minimum order notice */}
                     {!isMinimumOrderMet && cart.length > 0 && (
                       <div className="bg-red-500/10 border border-red-500/25 text-red-400 p-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider text-center mt-1">
-                        Minimum Order Rs. 200 Required
+                        {TRANSLATIONS[lang].minimumOrder}
                       </div>
                     )}
 
                     <div className="flex justify-between font-black text-amber-500 text-sm border-t border-stone-900 pt-2.5 mt-1">
-                      <span>Estimated Total</span>
+                      <span>{TRANSLATIONS[lang].estimatedTotal}</span>
                       <span>Rs. {cartTotal}</span>
                     </div>
                   </div>
@@ -2544,7 +2702,7 @@ export default function Dashboard() {
                   {cart.length > 0 && (
                     <div className="flex flex-col gap-2">
                       <label className="block text-[9px] font-black uppercase text-amber-500 tracking-wider">
-                        Select Payment Method
+                        {TRANSLATIONS[lang].selectPayment}
                       </label>
                       <div className="grid grid-cols-4 gap-1.5">
                         <button
@@ -2597,7 +2755,7 @@ export default function Dashboard() {
                       disabled={cart.length === 0 || checkoutLoading || !isMinimumOrderMet}
                       className="w-full py-3.5 bg-amber-500 hover:bg-amber-600 text-black text-xs font-black tracking-wider uppercase rounded-2xl shadow-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
                     >
-                      {checkoutLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Confirm Order & Checkout'}
+                      {checkoutLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : TRANSLATIONS[lang].confirmCheckout}
                     </button>
                   ) : (
                     <button
@@ -2613,7 +2771,7 @@ export default function Dashboard() {
                       onClick={clearCart}
                       className="w-full mt-2.5 py-2 text-stone-700 hover:text-stone-900 hover:underline text-[10px] font-black tracking-widest uppercase transition-colors cursor-pointer text-center bg-transparent border-0 outline-none flex items-center justify-center gap-1"
                     >
-                      Clear Cart
+                      {TRANSLATIONS[lang].clearCart}
                     </button>
                   )}
                 </div>
