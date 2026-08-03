@@ -1721,97 +1721,107 @@ export default function Dashboard() {
               <div className="flex-1 flex flex-col gap-6 w-full">
 
                 {/* SEARCH & FILTERS CONTROLS */}
-                <div className="glass-panel rounded-[32px] p-5 flex flex-col md:flex-row gap-4 justify-between items-center border border-amber-500/10 shadow-xl scroll-reveal">
-                <div className="relative w-full md:max-w-xs">
-                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" />
-                  <input
-                    type="text"
-                    placeholder="Search Momos, Noodles, Drinks..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-2xl glass-input text-xs font-semibold"
-                  />
+                <div className="glass-panel rounded-[32px] p-5 flex flex-col lg:flex-row gap-4 justify-between items-center border border-amber-500/10 shadow-xl scroll-reveal">
+                  <div className="relative w-full lg:max-w-xs shrink-0">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" />
+                    <input
+                      type="text"
+                      placeholder="Search Momos, Noodles, Drinks..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2.5 rounded-2xl glass-input text-xs font-semibold"
+                    />
+                  </div>
+
+                  <div className="flex flex-wrap gap-4 items-center justify-end w-full lg:w-auto">
+                    {/* Veg / Non-Veg Mode Toggle */}
+                    <div className="flex bg-stone-950 p-1.5 rounded-2xl border border-stone-850 gap-1 select-none">
+                      {(['ALL', 'VEG', 'NON_VEG'] as const).map((mode) => (
+                        <button
+                          key={mode}
+                          onClick={() => setVegFilter(mode)}
+                          className={`px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${
+                            vegFilter === mode
+                              ? mode === 'VEG'
+                                ? 'bg-emerald-600 text-stone-100 shadow-md shadow-emerald-600/20'
+                                : mode === 'NON_VEG'
+                                ? 'bg-rose-700 text-stone-100 shadow-md shadow-rose-700/20'
+                                : 'bg-amber-500 text-stone-950 shadow-md shadow-amber-500/20'
+                              : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900/40'
+                          }`}
+                        >
+                          {mode === 'ALL' && 'All Cuisines'}
+                          {mode === 'VEG' && 'Veg Only'}
+                          {mode === 'NON_VEG' && 'Non-Veg'}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Kitchen Status Simulation Controller */}
+                    <div className="flex bg-stone-950 p-1.5 rounded-2xl border border-stone-850 gap-1 select-none">
+                      {(['normal', 'busy', 'very_busy'] as const).map((load) => (
+                        <button
+                          key={load}
+                          onClick={() => setKitchenLoad(load)}
+                          className={`px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${
+                            kitchenLoad === load
+                              ? load === 'normal'
+                                ? 'bg-emerald-600 text-stone-100 shadow-md shadow-emerald-600/20'
+                                : load === 'busy'
+                                ? 'bg-amber-500 text-stone-950 shadow-md shadow-amber-500/20'
+                                : 'bg-rose-700 text-stone-100 shadow-md shadow-rose-700/20 animate-pulse'
+                              : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900/40'
+                          }`}
+                        >
+                          {load === 'normal' && 'Normal ETA'}
+                          {load === 'busy' && 'Busy (+10m)'}
+                          {load === 'very_busy' && 'Jammed (+20m)'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
-                {/* Veg / Non-Veg Mode Toggle */}
-                <div className="flex bg-stone-950 p-1.5 rounded-2xl border border-stone-850 gap-1 select-none">
-                  {(['ALL', 'VEG', 'NON_VEG'] as const).map((mode) => (
-                    <button
-                      key={mode}
-                      onClick={() => setVegFilter(mode)}
-                      className={`px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${
-                        vegFilter === mode
-                          ? mode === 'VEG'
-                            ? 'bg-emerald-600 text-stone-100 shadow-md shadow-emerald-600/20'
-                            : mode === 'NON_VEG'
-                            ? 'bg-rose-700 text-stone-100 shadow-md shadow-rose-700/20'
-                            : 'bg-amber-500 text-stone-950 shadow-md shadow-amber-500/20'
-                          : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900/40'
-                      }`}
-                    >
-                      {mode === 'ALL' && 'All Cuisines'}
-                      {mode === 'VEG' && 'Veg Only'}
-                      {mode === 'NON_VEG' && 'Non-Veg'}
-                    </button>
-                  ))}
-                </div>
+                {/* MENU CATEGORIES & CUISINES PANEL */}
+                <div className="glass-panel rounded-[32px] p-5 flex flex-col gap-4 border border-amber-500/10 shadow-xl scroll-reveal">
+                  <div>
+                    <label className="block text-[8px] font-black uppercase text-stone-500 tracking-widest mb-2">Food Categories</label>
+                    <div className="flex gap-1.5 overflow-x-auto pb-1 max-w-full no-scrollbar">
+                      {mockCategories.map((cat) => (
+                        <button
+                          key={cat}
+                          onClick={() => setSelectedCategory(cat)}
+                          className={`px-4 py-2 rounded-xl text-[10px] uppercase font-black whitespace-nowrap tracking-wider transition-all duration-300 ${
+                            selectedCategory === cat
+                              ? 'bg-amber-500 text-stone-950 shadow-md shadow-amber-500/10'
+                              : 'bg-stone-900/60 text-stone-400 hover:bg-stone-900 border border-stone-800'
+                          }`}
+                        >
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-                {/* Kitchen Status Simulation Controller */}
-                <div className="flex bg-stone-950 p-1.5 rounded-2xl border border-stone-850 gap-1 select-none">
-                  {(['normal', 'busy', 'very_busy'] as const).map((load) => (
-                    <button
-                      key={load}
-                      onClick={() => setKitchenLoad(load)}
-                      className={`px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${
-                        kitchenLoad === load
-                          ? load === 'normal'
-                            ? 'bg-emerald-600 text-stone-100 shadow-md shadow-emerald-600/20'
-                            : load === 'busy'
-                            ? 'bg-amber-500 text-stone-950 shadow-md shadow-amber-500/20'
-                            : 'bg-rose-700 text-stone-100 shadow-md shadow-rose-700/20 animate-pulse'
-                          : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900/40'
-                      }`}
-                    >
-                      {load === 'normal' && 'Normal ETA'}
-                      {load === 'busy' && 'Busy (+10m)'}
-                      {load === 'very_busy' && 'Jammed (+20m)'}
-                    </button>
-                  ))}
+                  <div className="border-t border-stone-850/40 pt-3">
+                    <label className="block text-[8px] font-black uppercase text-stone-500 tracking-widest mb-2">Select Cuisines</label>
+                    <div className="flex gap-1.5 overflow-x-auto pb-1 max-w-full no-scrollbar">
+                      {['All', 'Nepali', 'Newari', 'Sherpa', 'Chinese', 'Italian', 'American', 'Beverages'].map((c) => (
+                        <button
+                          key={c}
+                          onClick={() => setSelectedCuisine(c)}
+                          className={`px-3 py-1.5 rounded-xl text-[9px] uppercase font-black whitespace-nowrap tracking-wider transition-all duration-300 ${
+                            selectedCuisine === c
+                              ? 'bg-amber-500 text-stone-950 shadow-md shadow-amber-500/10'
+                              : 'bg-stone-900/60 text-stone-400 hover:bg-stone-900 border border-stone-800'
+                          }`}
+                        >
+                          {c === 'All' ? 'All Cuisines' : c}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-
-                <div className="flex gap-1.5 overflow-x-auto pb-1 max-w-full no-scrollbar">
-                  {mockCategories.map((cat) => (
-                    <button
-                      key={cat}
-                      onClick={() => setSelectedCategory(cat)}
-                      className={`px-4 py-2 rounded-xl text-[10px] uppercase font-black whitespace-nowrap tracking-wider transition-all duration-300 ${
-                        selectedCategory === cat
-                          ? 'bg-amber-500 text-stone-950 shadow-md shadow-amber-500/10'
-                          : 'bg-stone-900/60 text-stone-400 hover:bg-stone-900 border border-stone-800'
-                      }`}
-                    >
-                      {cat}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Cuisine Filter Bar */}
-                <div className="flex gap-1.5 overflow-x-auto pb-1 max-w-full no-scrollbar border-t border-stone-850/40 pt-2.5">
-                  {['All', 'Nepali', 'Newari', 'Sherpa', 'Chinese', 'Italian', 'American', 'Beverages'].map((c) => (
-                    <button
-                      key={c}
-                      onClick={() => setSelectedCuisine(c)}
-                      className={`px-3 py-1.5 rounded-xl text-[9px] uppercase font-black whitespace-nowrap tracking-wider transition-all duration-300 ${
-                        selectedCuisine === c
-                          ? 'bg-amber-500 text-stone-950 shadow-md shadow-amber-500/10'
-                          : 'bg-stone-900/60 text-stone-400 hover:bg-stone-900 border border-stone-800'
-                      }`}
-                    >
-                      {c === 'All' ? 'All Cuisines' : c}
-                    </button>
-                  ))}
-                </div>
-              </div>
 
               {/* 🎨 GUIDED PREFERENCE WIZARD */}
               <div className="bg-stone-900 border border-stone-850 rounded-[32px] overflow-hidden p-6 shadow-xl relative flex flex-col gap-4 scroll-reveal">
