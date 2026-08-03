@@ -51,6 +51,9 @@ export interface Customer {
   phone: string;
   address: string;
   addresses: Address[];
+  tiffinPlan?: 'DAILY' | 'WEEKLY' | 'MONTHLY';
+  tiffinStartDate?: string;
+  tiffinRenewalDate?: string;
 }
 
 export interface ThaliComponent {

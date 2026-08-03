@@ -18,7 +18,8 @@ import {
   LogOut,
   Store,
   ArrowRight,
-  Utensils
+  Utensils,
+  Calendar
 } from 'lucide-react';
 import { mockRestaurants, mockCategories } from '../data/mockData';
 import { OrderTracker } from '../components/OrderTracker';
@@ -48,7 +49,7 @@ interface FlyingItem {
 
 export default function Dashboard() {
   // Navigation tabs
-  const [activeTab, setActiveTab] = useState<'menu' | 'history'>('menu');
+  const [activeTab, setActiveTab] = useState<'menu' | 'history' | 'tiffin'>('menu');
 
   // Customer & Registration state
   const [customer, setCustomer] = useState<Customer | null>(null);
@@ -64,6 +65,8 @@ export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedCuisine, setSelectedCuisine] = useState('All');
+  const [selectedMood, setSelectedMood] = useState('All');
+  const [expandedAllergenId, setExpandedAllergenId] = useState<number | null>(null);
 
   // Saved Addresses state
   const [newAddressLabel, setNewAddressLabel] = useState('');
@@ -1228,8 +1231,30 @@ export default function Dashboard() {
       vegFilter === 'ALL' ||
       (vegFilter === 'VEG' && item.isVeg) ||
       (vegFilter === 'NON_VEG' && !item.isVeg);
-    return matchesSearch && matchesCategory && matchesCuisine && matchesVeg;
+    const matchesMood = selectedMood === 'All' || (item.moods && item.moods.includes(selectedMood));
+    return matchesSearch && matchesCategory && matchesCuisine && matchesVeg && matchesMood;
   });
+
+  // AI category recommendation logic
+  const recommendedItems = React.useMemo(() => {
+    if (cart.length === 0) return [];
+    
+    // Collect all category strings of items currently in the cart
+    const cartCategories = new Set(cart.map((item) => item.menuItem.category));
+    const cartItemIds = new Set(cart.map((item) => item.menuItem.id));
+    
+    // Find all items in the restaurant menu that share categories but are not in the cart
+    const matchingItems = selectedRestaurant.menu.filter(
+      (item) => cartCategories.has(item.category) && !cartItemIds.has(item.id)
+    );
+    
+    // If no category match, show popular items not in cart
+    if (matchingItems.length === 0) {
+      return selectedRestaurant.menu.filter((item) => !cartItemIds.has(item.id)).slice(0, 2);
+    }
+    
+    return matchingItems.slice(0, 2);
+  }, [cart, selectedRestaurant]);
 
   const getVegAccentClass = () => {
     if (vegFilter === 'VEG') return 'border-emerald-500/20 text-emerald-500 hover:border-emerald-500/40';
@@ -1289,6 +1314,14 @@ export default function Dashboard() {
                 }`}
               >
                 <History className="w-3.5 h-3.5" /> Order History
+              </button>
+              <button
+                onClick={() => setActiveTab('tiffin')}
+                className={`px-4 py-2 rounded-lg transition-all flex items-center gap-1.5 ${
+                  activeTab === 'tiffin' ? 'bg-amber-500 text-stone-950' : 'text-stone-400 hover:text-amber-500'
+                }`}
+              >
+                <Calendar className="w-3.5 h-3.5" /> Tiffin Plans
               </button>
             </nav>
 
@@ -1446,6 +1479,163 @@ export default function Dashboard() {
                   <p className="text-stone-500 text-xs">No historical receipts found for your account.</p>
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* 3. TIFFIN / SUBSCRIPTION PLANS VIEW */}
+        {activeTab === 'tiffin' && (
+          <div className="flex flex-col gap-8 scroll-reveal animate-[fadeIn_0.3s_ease-out]">
+            {/* Header */}
+            <div>
+              <span className="text-[10px] font-black text-amber-500 tracking-widest uppercase block mb-1">
+                Meal Subscriptions
+              </span>
+              <h2 className="text-3xl font-black serif-title tracking-tight text-stone-100 leading-tight">
+                Daily Tiffin Plans
+              </h2>
+              <p className="text-xs text-stone-400 leading-relaxed mt-2 max-w-xl">
+                Fresh, hygienic, home-cooked Nepalese meal rotations delivered straight to your home or office. Pick a schedule, set your preferences, and never worry about lunch again.
+              </p>
+            </div>
+
+            {/* Current Active Subscription Status */}
+            {customer && customer.tiffinPlan ? (
+              <div className="bg-emerald-950/20 border border-emerald-900/35 p-6 rounded-[28px] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20 shrink-0">
+                    <CheckCircle2 className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[9px] font-black text-emerald-500 uppercase tracking-wider block">Active Tiffin Subscription</span>
+                    <h3 className="text-sm font-black text-stone-100 uppercase tracking-wider mt-0.5">
+                      {customer.tiffinPlan} FEAST PLAN
+                    </h3>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10.5px] text-stone-400 mt-1 font-semibold">
+                      <span>📅 Starts: <strong className="text-stone-300">{customer.tiffinStartDate}</strong></span>
+                      <span>🔄 Renews: <strong className="text-stone-300">{customer.tiffinRenewalDate}</strong></span>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    if (confirm("Are you sure you want to cancel your tiffin plan?")) {
+                      const updated = {
+                        ...customer,
+                        tiffinPlan: undefined,
+                        tiffinStartDate: undefined,
+                        tiffinRenewalDate: undefined
+                      };
+                      setCustomer(updated);
+                      localStorage.setItem('swachha_bhojan_customer', JSON.stringify(updated));
+                    }
+                  }}
+                  className="px-4 py-2 bg-stone-900 hover:bg-red-950/20 hover:text-red-400 text-stone-400 hover:border-red-900/35 border border-stone-850 rounded-xl text-[10px] font-black uppercase tracking-wider cursor-pointer transition-all self-stretch sm:self-auto text-center"
+                >
+                  Cancel Plan
+                </button>
+              </div>
+            ) : (
+              <div className="bg-stone-900/40 border border-stone-850 p-6 rounded-[28px] text-center text-xs text-stone-500">
+                You do not have any active Tiffin subscriptions. Select a plan below to activate instantly for testing.
+              </div>
+            )}
+
+            {/* Plans List Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                {
+                  id: 'DAILY',
+                  name: 'Daily Feast Plan',
+                  price: 'Rs. 180',
+                  duration: 'per day',
+                  description: 'Perfect for working professionals needing a wholesome lunch on a day-by-day basis.',
+                  rotation: ['Dal Bhat Tarkari', 'Kathi Roll', 'Alloo Dum + Roti', 'Chowmein', 'Thakali Thali Set', 'Veg Fried Rice'],
+                },
+                {
+                  id: 'WEEKLY',
+                  name: 'Weekly Gourmet Plan',
+                  price: 'Rs. 1,150',
+                  duration: 'per week',
+                  description: 'Our most popular lunch subscription. Balanced nutrition with special Friday treats.',
+                  rotation: ['Classic Dal Bhat', 'Momo Combo', 'Newari Samay Baji', 'Pasta + Garlic Bread', 'Traditional Thali', 'Chicken Burger + Fries'],
+                },
+                {
+                  id: 'MONTHLY',
+                  name: 'Monthly Royal Plan',
+                  price: 'Rs. 4,500',
+                  duration: 'per month',
+                  description: 'Complete peace of mind. Daily fresh deliveries with choice of customized diet controls.',
+                  rotation: ['Dal Bhat + Lassi', 'Pizza Rotation', 'Thakali Feast', 'Healthy Salad + Soup', 'Kadhai Paneer + Naan', 'Dum Biryani + Coke'],
+                }
+              ].map((plan) => {
+                const isActive = customer?.tiffinPlan === plan.id;
+                return (
+                  <div key={plan.id} className={`glass-panel rounded-[32px] p-6 border transition-all duration-300 flex flex-col justify-between gap-6 ${
+                    isActive ? 'border-amber-500 bg-amber-500/5' : 'border-stone-850 bg-stone-900/30'
+                  }`}>
+                    <div className="space-y-4">
+                      <div>
+                        <h3 className="text-sm font-black text-stone-100 uppercase tracking-wider">{plan.name}</h3>
+                        <p className="text-[10px] text-stone-400 leading-relaxed mt-1.5">{plan.description}</p>
+                      </div>
+
+                      <div className="flex items-baseline gap-1">
+                        <strong className="text-xl font-black text-amber-500">{plan.price}</strong>
+                        <span className="text-[10px] text-stone-500 font-bold uppercase tracking-wider">{plan.duration}</span>
+                      </div>
+
+                      {/* Rotation preview */}
+                      <div className="bg-stone-950/60 p-4 rounded-2xl border border-stone-850/50 space-y-2">
+                        <span className="text-[8px] font-black text-stone-500 uppercase tracking-widest block mb-1">Weekly Rotation Preview</span>
+                        <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 text-[9.5px]">
+                          <div><span className="text-stone-500">Sun:</span> <span className="text-stone-300 font-semibold">{plan.rotation[0]}</span></div>
+                          <div><span className="text-stone-500">Mon:</span> <span className="text-stone-300 font-semibold">{plan.rotation[1]}</span></div>
+                          <div><span className="text-stone-500">Tue:</span> <span className="text-stone-300 font-semibold">{plan.rotation[2]}</span></div>
+                          <div><span className="text-stone-500">Wed:</span> <span className="text-stone-300 font-semibold">{plan.rotation[3]}</span></div>
+                          <div><span className="text-stone-500">Thu:</span> <span className="text-stone-300 font-semibold">{plan.rotation[4]}</span></div>
+                          <div><span className="text-stone-500">Fri:</span> <span className="text-stone-300 font-semibold">{plan.rotation[5]}</span></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        if (!customer) {
+                          alert("Please register or log in first to activate a subscription!");
+                          setShowRegModal(true);
+                          return;
+                        }
+                        const today = new Date();
+                        const renewalDate = new Date();
+                        if (plan.id === 'DAILY') renewalDate.setDate(today.getDate() + 1);
+                        else if (plan.id === 'WEEKLY') renewalDate.setDate(today.getDate() + 7);
+                        else if (plan.id === 'MONTHLY') renewalDate.setDate(today.getDate() + 30);
+
+                        const formattedStart = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                        const formattedRenewal = renewalDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+                        const updated = {
+                          ...customer,
+                          tiffinPlan: plan.id as 'DAILY' | 'WEEKLY' | 'MONTHLY',
+                          tiffinStartDate: formattedStart,
+                          tiffinRenewalDate: formattedRenewal
+                        };
+                        setCustomer(updated);
+                        localStorage.setItem('swachha_bhojan_customer', JSON.stringify(updated));
+                      }}
+                      disabled={isActive}
+                      className={`w-full py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider cursor-pointer transition-all flex items-center justify-center gap-1.5 ${
+                        isActive 
+                          ? 'bg-emerald-600/10 text-emerald-400 border border-emerald-900/30 cursor-default'
+                          : 'bg-amber-500 hover:bg-amber-600 text-stone-950 hover:shadow-md hover:shadow-amber-500/10'
+                      }`}
+                    >
+                      {isActive ? '✓ Subscribed' : 'Subscribe Now'}
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
@@ -1821,6 +2011,25 @@ export default function Dashboard() {
                       ))}
                     </div>
                   </div>
+
+                  <div className="border-t border-stone-850/40 pt-3">
+                    <label className="block text-[8px] font-black uppercase text-stone-500 tracking-widest mb-2">Filter by Mood</label>
+                    <div className="flex gap-1.5 overflow-x-auto pb-1 max-w-full no-scrollbar">
+                      {['All', 'Celebrating', 'Comfort Food', 'Feeling Healthy', 'Feeling Lazy'].map((m) => (
+                        <button
+                          key={m}
+                          onClick={() => setSelectedMood(m)}
+                          className={`px-3 py-1.5 rounded-xl text-[9px] uppercase font-black whitespace-nowrap tracking-wider transition-all duration-300 ${
+                            selectedMood === m
+                              ? 'bg-amber-500 text-stone-950 shadow-md shadow-amber-500/10'
+                              : 'bg-stone-900/60 text-stone-400 hover:bg-stone-900 border border-stone-800'
+                          }`}
+                        >
+                          {m === 'All' ? 'All Moods' : m}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
               {/* WIZARD & THALI BUILDER BENTO GRID */}
@@ -1936,6 +2145,43 @@ export default function Dashboard() {
                           <p className="text-[11px] text-stone-500 line-clamp-2 leading-relaxed">
                             {item.description}
                           </p>
+
+                          <button
+                            onClick={() => setExpandedAllergenId(expandedAllergenId === item.id ? null : item.id)}
+                            className="text-[9px] font-black text-amber-500/70 hover:text-amber-500 uppercase tracking-widest flex items-center gap-1 mt-2.5 transition-colors cursor-pointer"
+                          >
+                            <span>{expandedAllergenId === item.id ? 'Hide Details' : 'View Ingredients & Allergens'}</span>
+                          </button>
+
+                          {expandedAllergenId === item.id && (
+                            <div className="mt-2.5 p-2.5 bg-stone-950/65 rounded-xl border border-stone-850/50 text-[10px] space-y-1.5 animate-[fadeIn_0.2s_ease-out] w-full text-left">
+                              {item.ingredients && item.ingredients.length > 0 ? (
+                                <div>
+                                  <strong className="text-stone-400 font-black uppercase text-[8px] tracking-widest block mb-0.5">Ingredients:</strong>
+                                  <span className="text-stone-300 font-medium">{item.ingredients.join(', ')}</span>
+                                </div>
+                              ) : (
+                                <div className="text-stone-500 font-medium">No ingredients info available.</div>
+                              )}
+
+                              {item.allergens && item.allergens.length > 0 ? (
+                                <div className="pt-1.5 border-t border-stone-850/30">
+                                  <strong className="text-rose-500/70 font-black uppercase text-[8px] tracking-widest block mb-0.5">Allergens:</strong>
+                                  <div className="flex flex-wrap gap-1 mt-0.5">
+                                    {item.allergens.map((a) => (
+                                      <span key={a} className="bg-rose-950/40 text-rose-405 border border-rose-900/30 px-1.5 py-0.2 rounded text-[7.5px] font-black uppercase">
+                                        {a}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="pt-1.5 border-t border-stone-850/30 text-stone-500 font-medium">
+                                  No known allergens.
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
 
                         {item.spiceOptions && !isSoldOut && (
@@ -2230,6 +2476,40 @@ export default function Dashboard() {
                     )}
                   </div>
                 </div>
+
+                {/* AI Recommendation list */}
+                {!groupSession && cart.length > 0 && recommendedItems.length > 0 && (
+                  <div className="mt-2.5 pt-3 border-t border-stone-900/60 flex flex-col gap-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] font-black uppercase text-amber-500 tracking-wider flex items-center gap-1.5">
+                        <Sparkles className="w-3 h-3 animate-pulse text-amber-500" />
+                        You Might Also Like
+                      </span>
+                      <span className="text-[7.5px] bg-stone-950 px-1.5 py-0.5 rounded text-stone-500 font-black uppercase tracking-wider">AI Recommend</span>
+                    </div>
+                    
+                    {/* TODO: Replace this rule-based recommendation logic with a Vertex AI / Recommendations AI model API call */}
+                    <div className="flex flex-col gap-1.5">
+                      {recommendedItems.map((rec) => (
+                        <div key={rec.id} className="flex items-center justify-between bg-stone-950/20 p-2 rounded-xl border border-stone-900/50">
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <img src={rec.image} className="w-8 h-8 rounded-lg object-cover shrink-0" alt="" />
+                            <div className="min-w-0 flex-1">
+                              <h4 className="text-[11px] font-extrabold text-stone-250 truncate leading-tight">{rec.name}</h4>
+                              <span className="text-[9.5px] text-amber-500 font-bold block mt-0.5">Rs. {rec.price}</span>
+                            </div>
+                          </div>
+                          <button
+                            onClick={(e) => addToCart(rec, e)}
+                            className="text-[9px] font-black uppercase bg-amber-500 text-stone-950 hover:bg-amber-600 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors shrink-0 ml-2"
+                          >
+                            + Add
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Billing summary and Checkout actions */}
                 <div className="border-t border-stone-900 pt-4 flex flex-col gap-4 mt-auto">
