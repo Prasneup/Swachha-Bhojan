@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bhojan Studio - Next-Gen Food Ordering for Nepal",
+  title: "Swachha Bhojan - Next-Gen Food Ordering for Nepal",
   description: "An immersive, glassmorphic food ordering portal featuring authentic Nepalese cuisines, custom dumpling recipes, and live shipment tracking.",
 };
 

@@ -1261,10 +1261,10 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 bg-amber-500 rounded-xl flex items-center justify-center text-stone-950 font-extrabold shadow-lg shadow-amber-500/10">
-              BS
+              SB
             </div>
             <div>
-              <h1 className="text-base font-black tracking-tight uppercase serif-title text-amber-500">Bhojan Studio</h1>
+              <h1 className="text-base font-black tracking-tight uppercase serif-title text-amber-500">Swachha Bhojan</h1>
               <p className="text-[9px] font-bold text-stone-500 tracking-wider">NEPALESE CULINARY</p>
             </div>
           </div>
@@ -1579,7 +1579,7 @@ export default function Dashboard() {
                   How We Deliver Freshness
                 </h2>
                 <p className="text-xs text-stone-400 leading-relaxed">
-                  Bhojan Studio utilizes zero-mile supply lines and heat-insulating boxes to guarantee your dumplings sizzle upon arrival.
+                  Swachha Bhojan utilizes zero-mile supply lines and heat-insulating boxes to guarantee your dumplings sizzle upon arrival.
                 </p>
               </div>
                 
@@ -2339,7 +2339,7 @@ export default function Dashboard() {
       <footer className="border-t border-stone-850 bg-stone-900 mt-16 py-12 text-stone-600 text-xs scroll-reveal">
         <div className="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 md:grid-cols-3 gap-8 leading-relaxed">
           <div className="flex flex-col gap-2">
-            <h4 className="text-stone-400 font-extrabold uppercase text-xs tracking-wider">About Bhojan Studio</h4>
+            <h4 className="text-stone-400 font-extrabold uppercase text-xs tracking-wider">About Swachha Bhojan</h4>
             <p className="max-w-sm">
               We are Kathmandu&apos;s premiere single-kitchen restaurant platform. We deliver hot culinary recipes directly from our chefs to your table within minutes.
             </p>
@@ -2355,8 +2355,8 @@ export default function Dashboard() {
           <div className="flex flex-col gap-2">
             <h4 className="text-stone-400 font-extrabold uppercase text-xs tracking-wider">Contact & Support</h4>
             <p>📞 Phone: +977-1-4221122</p>
-            <p>📧 Support: hello@bhojanstudio.com.np</p>
-            <p className="text-[10px] text-stone-500 mt-2">© 2026 Bhojan Studio. All rights reserved.</p>
+            <p>📧 Support: hello@swachhabhojan.com.np</p>
+            <p className="text-[10px] text-stone-500 mt-2">© 2026 Swachha Bhojan. All rights reserved.</p>
           </div>
         </div>
       </footer>
